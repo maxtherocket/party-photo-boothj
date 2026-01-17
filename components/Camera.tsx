@@ -186,23 +186,10 @@ export function Camera({ onCapture }: CameraProps) {
               const video = videoRef.current;
               const canvas = canvasRef.current;
 
-              // Set canvas to 9:16 aspect ratio (portrait)
-              const aspectRatio = 9 / 16;
-              let width, height;
-              
-              // Calculate dimensions to fit 9:16 within the video feed
-              if (video.videoWidth / video.videoHeight > aspectRatio) {
-                // Video is wider than 9:16, constrain by height
-                height = video.videoHeight;
-                width = height * aspectRatio;
-              } else {
-                // Video is taller than 9:16, constrain by width
-                width = video.videoWidth;
-                height = width / aspectRatio;
-              }
-              
-              canvas.width = width;
-              canvas.height = height;
+              // Set canvas to square (crop to center)
+              const size = Math.min(video.videoWidth, video.videoHeight);
+              canvas.width = size;
+              canvas.height = size;
 
               const ctx = canvas.getContext("2d");
               if (ctx) {
@@ -210,24 +197,24 @@ export function Camera({ onCapture }: CameraProps) {
                 const shouldMirror = facingMode === "user" && !selectedDeviceId;
                 
                 if (shouldMirror) {
-                  ctx.translate(width, 0);
+                  ctx.translate(size, 0);
                   ctx.scale(-1, 1);
                 }
 
                 // Calculate crop offset to center
-                const offsetX = (video.videoWidth - width) / 2;
-                const offsetY = (video.videoHeight - height) / 2;
+                const offsetX = (video.videoWidth - size) / 2;
+                const offsetY = (video.videoHeight - size) / 2;
 
                 ctx.drawImage(
                   video,
                   offsetX,
                   offsetY,
-                  width,
-                  height,
+                  size,
+                  size,
                   0,
                   0,
-                  width,
-                  height
+                  size,
+                  size
                 );
 
                 // Flash effect
@@ -268,7 +255,7 @@ export function Camera({ onCapture }: CameraProps) {
   return (
     <div className="relative flex flex-col items-center justify-center h-full px-4">
       {/* Camera viewfinder */}
-      <div className="relative w-full max-w-md aspect-[9/16] rounded-3xl overflow-hidden border-4 border-white/20 shadow-2xl">
+      <div className="relative w-full max-w-md aspect-square rounded-3xl overflow-hidden border-4 border-white/20 shadow-2xl">
         <video
           ref={videoRef}
           autoPlay
