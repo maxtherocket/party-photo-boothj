@@ -12,7 +12,7 @@ export function SceneSelector({ onSelect, capturedImage }: SceneSelectorProps) {
     <div className="flex flex-col h-full p-4">
       {/* Preview of captured photo */}
       <div className="flex justify-center mb-6">
-        <div className="relative w-32 h-32 rounded-2xl overflow-hidden border-4 border-white/30 shadow-xl">
+        <div className="relative w-28 aspect-[9/16] rounded-2xl overflow-hidden border-4 border-white/30 shadow-xl">
           <img
             src={`data:image/jpeg;base64,${capturedImage}`}
             alt="Your photo"

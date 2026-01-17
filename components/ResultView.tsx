@@ -58,7 +58,7 @@ export function ResultView({ resultUrl, photoId, onRetake }: ResultViewProps) {
       </h2>
 
       {/* Result image */}
-      <div className="relative w-full max-w-sm aspect-square rounded-3xl overflow-hidden border-4 border-yellow-400 shadow-2xl mb-6">
+      <div className="relative w-full max-w-sm aspect-[9/16] rounded-3xl overflow-hidden border-4 border-yellow-400 shadow-2xl mb-6">
         <img
           src={resultUrl}
           alt="Your transformed photo"

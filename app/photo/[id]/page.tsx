@@ -126,7 +126,7 @@ export default function PhotoPage() {
 
         {/* Photo */}
         {photo.resultUrl && (
-          <div className="w-full max-w-md aspect-square rounded-3xl overflow-hidden border-4 border-yellow-400 shadow-2xl mb-6">
+          <div className="w-full max-w-md aspect-[9/16] rounded-3xl overflow-hidden border-4 border-yellow-400 shadow-2xl mb-6">
             <img
               src={photo.resultUrl}
               alt="Your transformed photo"
