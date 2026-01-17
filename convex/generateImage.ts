@@ -25,7 +25,7 @@ export const generateTransformedImage = action({
       const ai = new GoogleGenAI({ apiKey });
 
       const response = await ai.models.generateContent({
-        model: "gemini-2.0-flash-exp",
+        model: "gemini-3-pro-image-preview",
         contents: [
           {
             parts: [
@@ -41,6 +41,10 @@ export const generateTransformedImage = action({
         ],
         config: {
           responseModalities: ["TEXT", "IMAGE"],
+          imageConfig: {
+            aspectRatio: "9:16",
+            imageSize: "2K",
+          },
         },
       });
 
