@@ -6,48 +6,170 @@ interface CameraProps {
   onCapture: (imageBase64: string) => void;
 }
 
+interface CameraDevice {
+  deviceId: string;
+  label: string;
+}
+
+interface CameraCapabilities {
+  hasZoom: boolean;
+  zoomMin: number;
+  zoomMax: number;
+  zoomStep: number;
+  currentZoom: number;
+}
+
 export function Camera({ onCapture }: CameraProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const streamRef = useRef<MediaStream | null>(null);
+  
   const [isStreaming, setIsStreaming] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [countdown, setCountdown] = useState<number | null>(null);
   const [flash, setFlash] = useState(false);
+  
+  // Camera selection state
+  const [facingMode, setFacingMode] = useState<"user" | "environment">("user");
+  const [availableDevices, setAvailableDevices] = useState<CameraDevice[]>([]);
+  const [selectedDeviceId, setSelectedDeviceId] = useState<string | null>(null);
+  const [showDeviceSelector, setShowDeviceSelector] = useState(false);
+  
+  // Zoom state
+  const [capabilities, setCapabilities] = useState<CameraCapabilities | null>(null);
+  const [zoom, setZoom] = useState(1);
 
-  const startCamera = useCallback(async () => {
+  // Enumerate available video devices
+  const enumerateDevices = useCallback(async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      const videoDevices = devices
+        .filter((d) => d.kind === "videoinput")
+        .map((d, index) => ({
+          deviceId: d.deviceId,
+          label: d.label || `Camera ${index + 1}`,
+        }));
+      setAvailableDevices(videoDevices);
+    } catch (err) {
+      console.error("Error enumerating devices:", err);
+    }
+  }, []);
+
+  // Stop current stream
+  const stopStream = useCallback(() => {
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((track) => track.stop());
+      streamRef.current = null;
+    }
+    if (videoRef.current) {
+      videoRef.current.srcObject = null;
+    }
+    setIsStreaming(false);
+  }, []);
+
+  // Start camera with current settings
+  const startCamera = useCallback(async () => {
+    // Stop any existing stream first
+    stopStream();
+    
+    try {
+      // Build constraints
+      const constraints: MediaStreamConstraints = {
         video: {
-          facingMode: "user",
-          width: { ideal: 1280 },
-          height: { ideal: 1280 },
+          width: { ideal: 1920 },
+          height: { ideal: 1920 },
+          ...(selectedDeviceId 
+            ? { deviceId: { exact: selectedDeviceId } }
+            : { facingMode: facingMode }
+          ),
         },
         audio: false,
-      });
+      };
+
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      streamRef.current = stream;
 
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
         setIsStreaming(true);
         setError(null);
+        
+        // Check for zoom and other capabilities
+        const videoTrack = stream.getVideoTracks()[0];
+        if (videoTrack && "getCapabilities" in videoTrack) {
+          try {
+            const caps = videoTrack.getCapabilities() as MediaTrackCapabilities & {
+              zoom?: { min: number; max: number; step: number };
+            };
+            
+            if (caps.zoom) {
+              const settings = videoTrack.getSettings() as MediaTrackSettings & { zoom?: number };
+              setCapabilities({
+                hasZoom: true,
+                zoomMin: caps.zoom.min,
+                zoomMax: caps.zoom.max,
+                zoomStep: caps.zoom.step,
+                currentZoom: settings.zoom || caps.zoom.min,
+              });
+              setZoom(settings.zoom || caps.zoom.min);
+            } else {
+              setCapabilities(null);
+            }
+          } catch {
+            setCapabilities(null);
+          }
+        }
       }
+      
+      // Enumerate devices after getting permission (labels become available)
+      await enumerateDevices();
+      
     } catch (err) {
       console.error("Error accessing camera:", err);
       setError(
         "Unable to access camera. Please ensure you've granted camera permissions."
       );
     }
+  }, [facingMode, selectedDeviceId, stopStream, enumerateDevices]);
+
+  // Handle zoom change
+  const handleZoomChange = useCallback(async (newZoom: number) => {
+    if (!streamRef.current) return;
+    
+    const videoTrack = streamRef.current.getVideoTracks()[0];
+    if (!videoTrack) return;
+    
+    try {
+      await videoTrack.applyConstraints({
+        // @ts-expect-error - zoom is not in the standard type definitions yet
+        advanced: [{ zoom: newZoom }],
+      });
+      setZoom(newZoom);
+    } catch (err) {
+      console.error("Error applying zoom:", err);
+    }
   }, []);
 
+  // Toggle between front and back camera
+  const toggleCamera = useCallback(() => {
+    setSelectedDeviceId(null); // Reset device selection when toggling
+    setFacingMode((prev) => (prev === "user" ? "environment" : "user"));
+  }, []);
+
+  // Select a specific device
+  const selectDevice = useCallback((deviceId: string) => {
+    setSelectedDeviceId(deviceId);
+    setShowDeviceSelector(false);
+  }, []);
+
+  // Effect to start camera when facingMode or device changes
   useEffect(() => {
     startCamera();
 
     return () => {
-      if (videoRef.current?.srcObject) {
-        const stream = videoRef.current.srcObject as MediaStream;
-        stream.getTracks().forEach((track) => track.stop());
-      }
+      stopStream();
     };
-  }, [startCamera]);
+  }, [facingMode, selectedDeviceId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const capturePhoto = useCallback(() => {
     // Start countdown
@@ -71,9 +193,13 @@ export function Camera({ onCapture }: CameraProps) {
 
               const ctx = canvas.getContext("2d");
               if (ctx) {
-                // Mirror the image horizontally for selfie effect
-                ctx.translate(size, 0);
-                ctx.scale(-1, 1);
+                // Only mirror the image for front-facing camera (selfie mode)
+                const shouldMirror = facingMode === "user" && !selectedDeviceId;
+                
+                if (shouldMirror) {
+                  ctx.translate(size, 0);
+                  ctx.scale(-1, 1);
+                }
 
                 // Calculate crop offset to center
                 const offsetX = (video.videoWidth - size) / 2;
@@ -109,7 +235,7 @@ export function Camera({ onCapture }: CameraProps) {
         return prev - 1;
       });
     }, 1000);
-  }, [onCapture]);
+  }, [onCapture, facingMode, selectedDeviceId]);
 
   if (error) {
     return (
@@ -127,7 +253,7 @@ export function Camera({ onCapture }: CameraProps) {
   }
 
   return (
-    <div className="relative flex flex-col items-center justify-center h-full">
+    <div className="relative flex flex-col items-center justify-center h-full px-4">
       {/* Camera viewfinder */}
       <div className="relative w-full max-w-md aspect-square rounded-3xl overflow-hidden border-4 border-white/20 shadow-2xl">
         <video
@@ -135,7 +261,9 @@ export function Camera({ onCapture }: CameraProps) {
           autoPlay
           playsInline
           muted
-          className="w-full h-full object-cover scale-x-[-1]"
+          className={`w-full h-full object-cover ${
+            facingMode === "user" && !selectedDeviceId ? "scale-x-[-1]" : ""
+          }`}
         />
 
         {/* Countdown overlay */}
@@ -155,16 +283,124 @@ export function Camera({ onCapture }: CameraProps) {
         <div className="absolute top-4 right-4 w-8 h-8 border-r-4 border-t-4 border-yellow-400 rounded-tr-lg" />
         <div className="absolute bottom-4 left-4 w-8 h-8 border-l-4 border-b-4 border-yellow-400 rounded-bl-lg" />
         <div className="absolute bottom-4 right-4 w-8 h-8 border-r-4 border-b-4 border-yellow-400 rounded-br-lg" />
+
+        {/* Camera controls overlay */}
+        <div className="absolute top-4 right-14 flex gap-2">
+          {/* Flip camera button */}
+          <button
+            onClick={toggleCamera}
+            disabled={countdown !== null}
+            className="w-10 h-10 rounded-full bg-black/50 backdrop-blur-sm text-white 
+                       flex items-center justify-center hover:bg-black/70 
+                       disabled:opacity-50 transition-all"
+            title={facingMode === "user" ? "Switch to back camera" : "Switch to front camera"}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={2}
+              stroke="currentColor"
+              className="w-5 h-5"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"
+              />
+            </svg>
+          </button>
+
+          {/* Device selector button (only show if multiple devices) */}
+          {availableDevices.length > 1 && (
+            <button
+              onClick={() => setShowDeviceSelector(!showDeviceSelector)}
+              disabled={countdown !== null}
+              className="w-10 h-10 rounded-full bg-black/50 backdrop-blur-sm text-white 
+                         flex items-center justify-center hover:bg-black/70 
+                         disabled:opacity-50 transition-all"
+              title="Select camera"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={2}
+                stroke="currentColor"
+                className="w-5 h-5"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316Z"
+                />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM18.75 10.5h.008v.008h-.008V10.5Z"
+                />
+              </svg>
+            </button>
+          )}
+        </div>
+
+        {/* Device selector dropdown */}
+        {showDeviceSelector && availableDevices.length > 1 && (
+          <div className="absolute top-16 right-4 bg-black/80 backdrop-blur-sm rounded-xl p-2 min-w-48">
+            <p className="text-white/60 text-xs px-3 py-1 uppercase tracking-wide">
+              Select Camera
+            </p>
+            {availableDevices.map((device) => (
+              <button
+                key={device.deviceId}
+                onClick={() => selectDevice(device.deviceId)}
+                className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
+                  selectedDeviceId === device.deviceId
+                    ? "bg-pink-500 text-white"
+                    : "text-white hover:bg-white/20"
+                }`}
+              >
+                {device.label}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Hidden canvas for capture */}
       <canvas ref={canvasRef} className="hidden" />
 
+      {/* Zoom slider (only show if camera supports zoom) */}
+      {capabilities?.hasZoom && (
+        <div className="w-full max-w-md mt-4 px-4">
+          <div className="flex items-center gap-3">
+            <span className="text-white/70 text-sm">🔍</span>
+            <input
+              type="range"
+              min={capabilities.zoomMin}
+              max={capabilities.zoomMax}
+              step={capabilities.zoomStep}
+              value={zoom}
+              onChange={(e) => handleZoomChange(parseFloat(e.target.value))}
+              disabled={countdown !== null}
+              className="flex-1 h-2 bg-white/20 rounded-full appearance-none cursor-pointer
+                         [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-5 
+                         [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:bg-white 
+                         [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:shadow-lg
+                         [&::-webkit-slider-thumb]:cursor-pointer"
+            />
+            <span className="text-white/70 text-sm min-w-[3ch]">
+              {zoom.toFixed(1)}x
+            </span>
+          </div>
+        </div>
+      )}
+
       {/* Capture button */}
       <button
         onClick={capturePhoto}
         disabled={!isStreaming || countdown !== null}
-        className="mt-8 w-24 h-24 rounded-full bg-white border-8 border-pink-500 shadow-lg 
+        className="mt-6 w-24 h-24 rounded-full bg-white border-8 border-pink-500 shadow-lg 
                    disabled:opacity-50 disabled:cursor-not-allowed
                    hover:scale-105 active:scale-95 transition-transform
                    flex items-center justify-center"
@@ -173,7 +409,7 @@ export function Camera({ onCapture }: CameraProps) {
       </button>
 
       <p className="mt-4 text-white/70 text-center">
-        Tap the button to take your photo!
+        {facingMode === "user" ? "📸 Selfie mode" : "📷 Back camera"} • Tap to capture!
       </p>
     </div>
   );
