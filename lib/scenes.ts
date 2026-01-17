@@ -3,12 +3,24 @@ export interface Scene {
   name: string;
   emoji: string;
   prompt: string;
+  isCustom?: boolean;
 }
 
 // Base preservation instructions to prepend to all prompts
-const FACE_PRESERVATION = `CRITICAL: Preserve the person's face, facial features, skin tone, and identity EXACTLY as shown in the original photo. Do not modify face geometry, facial structure, eye shape, nose, mouth, or any facial characteristics. The person must be immediately recognizable as themselves.`;
+export const FACE_PRESERVATION = `CRITICAL: Preserve the person's face, facial features, skin tone, and identity EXACTLY as shown in the original photo. Do not modify face geometry, facial structure, eye shape, nose, mouth, or any facial characteristics. The person must be immediately recognizable as themselves.`;
 
-const STYLE_INSTRUCTIONS = `Style: Photorealistic, high-quality photograph with natural lighting. The final image should look like a real photograph, not AI-generated or illustrated. Cinematic quality with professional photography aesthetics.`;
+export const STYLE_INSTRUCTIONS = `Style: Photorealistic, high-quality photograph with natural lighting. The final image should look like a real photograph, not AI-generated or illustrated. Cinematic quality with professional photography aesthetics.`;
+
+// Helper to build a custom prompt with proper instructions
+export function buildCustomPrompt(userPrompt: string): string {
+  return `${FACE_PRESERVATION}
+
+Scene transformation: ${userPrompt}
+
+Add an interesting, fun, or ridiculous hat, headpiece, or hairstyle that matches the vibe of the scene. Make it memorable and photo-worthy.
+
+${STYLE_INSTRUCTIONS}`;
+}
 
 export const SCENES: Scene[] = [
   {
@@ -17,27 +29,27 @@ export const SCENES: Scene[] = [
     emoji: "🌮",
     prompt: `${FACE_PRESERVATION}
 
-MANDATORY HAT: Add an absolutely ENORMOUS sombrero - comically oversized, at least twice the width of their shoulders. The sombrero should be hot pink with neon green embroidery, gold sequins, and tiny dangling chili pepper ornaments around the brim that catch the light. It should look like it weighs 20 pounds but they're wearing it proudly.
+MANDATORY HAT: Slap an absolutely UNHINGED sombrero on their head - we're talking 4 feet wide minimum, glowing LED trim, loaded with fake chili pepper christmas lights, tiny tequila bottles dangling off the brim, and a live-action hot sauce fountain somehow built into the top. This hat is a STATEMENT. It says "I peaked at this party."
 
-Scene transformation: Dress them in the most gloriously over-the-top mariachi outfit imaginable - think bedazzled jacket with gold braiding, ruffled shirt, and a bow tie made of actual tiny tacos. They should be surrounded by floating tacos, burritos, and chips with salsa raining down like confetti. Add a tiny chihuahua in a matching sombrero peeking from behind them.
+Scene transformation: Dress them in the most gloriously unhinged mariachi-meets-Vegas-showgirl outfit - a sequined jacket that would blind a pilot, gold chains with tiny taco pendants, and boots made of what appears to be solidified nacho cheese. They're being showered in a rain of flying tacos, burritos, and lime wedges while a Chihuahua wearing a matching sombrero photobombs with pure chaotic energy.
 
-Background: An explosion of papel picado banners in every color imaginable, a mariachi band of skeletons playing enthusiastically in the background, piñatas shaped like avocados hanging everywhere, and a sunset that looks like liquid cheese and salsa swirled together.
+Background: Maximum chaos - papel picado made of holographic material, a mariachi band of skeletons doing a coordinated dance number, piñatas shaped like margarita glasses exploding everywhere, and a sunset that's definitely breaking physics with its intensity. There's a lowrider bouncing in the background. A neon sign says "NO REGRETS" in Spanish.
 
-${STYLE_INSTRUCTIONS} Warm, festive golden hour lighting with the absurd elements rendered completely photorealistically - as if this ridiculous scene actually exists.`,
+${STYLE_INSTRUCTIONS} Golden hour lighting cranked to 11. Every sequin catches the light. This photo should make someone say "I need to know the story behind this."`,
   },
   {
-    id: "retro2000s",
-    name: "Y2K Throwback",
-    emoji: "📱",
+    id: "tranceCover",
+    name: "Trance Album",
+    emoji: "💿",
     prompt: `${FACE_PRESERVATION}
 
-MANDATORY HAIR: Give them the most EXTREME early 2000s hairstyle - we're talking chunky highlights (blonde AND pink), butterfly clips covering every available inch, tiny twist buns, AND frosted tips all at once. The hair should look like it used an entire can of hair gel and sparkle spray.
+MANDATORY STYLING: Give them absolutely TRANSCENDENT rave hair - think cyber-goth meets extraterrestrial DJ. Towering neon-colored hair extensions, possibly dreads with UV-reactive wraps, cyber goggles pushed up on forehead, and LED strip lights woven through. Their face should have subtle UV face paint accents (dots, tribal patterns) that glow. Maybe some chrome/metallic temporary tattoos visible.
 
-Scene transformation: Dress them in head-to-toe iridescent everything - a shiny holographic crop top, ultra low-rise bedazzled jeans with a visible whale tail, platform sneakers with goldfish in the heels, and arms STACKED with jelly bracelets from wrist to elbow. They should be holding a Motorola Razr in hot pink AND a portable CD player with oversized foam headphones.
+Scene transformation: This is a 2003 Tiësto compilation CD cover come to life. Dress them in peak Y2K rave fashion - vinyl pants, a mesh top or furry bra top, platform cyber boots, and arms absolutely STACKED with kandi bracelets up to the elbow. They're mid-dance move, hands up, eyes closed in pure euphoric bliss, surrounded by laser beams cutting through artificial fog.
 
-Background: The iconic laser beam mall photo backdrop, but cranked to 11 - more lasers, more stars, more purple and teal gradient. Add floating Nokia phones, Tamagotchis, and burned CDs labeled "Summer Mix 2003" scattered around. Include an inflatable chair and a lava lamp.
+Background: A massive outdoor festival at night - think Ibiza beach party meets alien landing. Enormous LED totems, fire dancers as silhouettes, a massive DJ booth with impossible amounts of lasers and pyrotechnics. The crowd is just visible as a sea of glow sticks. The sky has northern lights that are definitely not natural. Text floating in the aesthetic: just vibes, no actual words needed.
 
-${STYLE_INSTRUCTIONS} That classic early 2000s flash photography look - slightly overexposed, warm color cast, and lens flare. Make it look like an actual photo from 2002 that someone just found in a shoebox.`,
+${STYLE_INSTRUCTIONS} That classic early-2000s CD cover aesthetic - heavy contrast, oversaturated cyans and magentas, lens flares for DAYS. This should look like it belongs in a DJ Mag top 100 feature.`,
   },
   {
     id: "disco",
@@ -45,13 +57,13 @@ ${STYLE_INSTRUCTIONS} That classic early 2000s flash photography look - slightly
     emoji: "🪩",
     prompt: `${FACE_PRESERVATION}
 
-MANDATORY HAIR: Give them a SPECTACULAR 1970s afro or feathered Farrah Fawcett hair (whichever suits them better) - absolutely massive, gravity-defying, with a jeweled headband and actual tiny disco balls woven into the hair that catch and reflect light. The hair should be majestic.
+MANDATORY HAIR: Give them the most LEGENDARY disco hair ever witnessed - a gravity-defying afro that could house a family of birds OR a feathered Farrah flip that moves in slow motion. The hair should contain at least one hidden disco ball, be dusted with actual glitter, and have a small bird or butterfly that seems to have gotten lost in there. This hair has its own agent.
 
-Scene transformation: Dress them in the most outrageous disco outfit possible - a sequined jumpsuit with a plunging neckline and bell-bottoms so wide you could fit a family inside. Add platform shoes at least 6 inches tall, massive gold medallion necklaces layered three-deep, and oversized tinted glasses in amber. They should be striking the classic disco point pose.
+Scene transformation: Peak Studio 54 excess - a sequined jumpsuit with a neckline that goes to the navel, bell-bottoms so wide they qualify as a fire hazard, platform shoes that add 8 inches of pure confidence, and enough gold chains to set off a metal detector from space. They're mid-move on the light-up floor, one finger pointing to heaven, the other holding a martini that somehow hasn't spilled.
 
-Background: A disco dance floor that's actually made of light-up tiles, with a disco ball the size of a small car overhead. Laser beams in every color shooting across the scene, silhouettes of dancers doing the hustle in the background, and glitter literally floating in the air. The whole scene should sparkle like it was dipped in diamonds.
+Background: The most legendary disco club that never existed - a disco ball the size of a Volkswagen raining light everywhere, the floor is pure illuminated tiles, there's a live tiger on a leash in the background (very 70s), velvet ropes, silhouettes of dancers doing the hustle, and enough cocaine-era glamour to fuel a documentary. Burt Reynolds is definitely here somewhere.
 
-${STYLE_INSTRUCTIONS} Rich, saturated colors with dramatic studio lighting. The disco ball should cast realistic light fragments across everything. Make it feel like Studio 54 at its absolute peak.`,
+${STYLE_INSTRUCTIONS} Peak 1970s film grain aesthetic with rich, warm colors. The disco ball reflections should look absolutely real bouncing off every surface.`,
   },
   {
     id: "wildWest",
@@ -59,27 +71,41 @@ ${STYLE_INSTRUCTIONS} Rich, saturated colors with dramatic studio lighting. The 
     emoji: "🤠",
     prompt: `${FACE_PRESERVATION}
 
-MANDATORY HAT: Add an absolutely RIDICULOUS cowboy hat - we're talking 10-gallon hat that's actually 50 gallons. Worn white leather with bullet holes, a rattlesnake hatband (the snake looks annoyed but resigned), and sheriff's badge pinned to the front. The hat should have its own weather system.
+MANDATORY HAT: The most OUTRAGEOUS cowboy hat in the West - we're talking so big it has its own zip code, made of exotic (fake) leather with actual bullet holes telling a story, a rattlesnake hatband where the snake looks like it's judging everyone, a sheriff's badge AND an outlaw star pinned on simultaneously, and possibly smoking slightly from a recent gunfight.
 
-Scene transformation: Dress them as the most legendary outlaw/sheriff hybrid - a weathered leather duster coat, bandolier filled with hot sauce bottles instead of bullets, spurred boots that are definitely impractical, and they're twirling a lasso made of beef jerky. A wanted poster in the background shows their face with "WANTED: TOO COOL" written on it.
+Scene transformation: They're the most legendary outlaw-sheriff-antihero the West has ever seen. A weathered duster coat that's seen some things, a bandolier but instead of bullets it's filled with whiskey shooters, spurs that are comically oversized, and they're dual-wielding - one hand has a pistol, the other has a bottle of whiskey. A wanted poster in frame shows their face with "REWARD: ONE HELL OF A STORY" written on it.
 
-Background: A dusty Main Street showdown scene at high noon. Tumbleweeds the size of cars rolling by, a saloon with swinging doors where a horse is ordering a drink at the bar, a water tower shaped like a cowboy boot, and the most dramatic desert sunset with cacti wearing tiny cowboy hats.
+Background: High noon showdown vibes in a town that time forgot - the saloon's swinging doors are mid-swing, a horse at the bar is ordering its usual, tumbleweeds the size of Smart cars roll through, and the MOST dramatic sunset ever painted by nature (or Photoshop). There's a standoff happening but everyone seems chill about it. A clock tower shows exactly 12:00. Someone has graffiti'd "YOLO" on a water tower in old-timey font.
 
-${STYLE_INSTRUCTIONS} Warm sepia tones with that classic spaghetti western cinematography feel. Dust particles visible in the dramatic lighting, lens flare from the setting sun.`,
+${STYLE_INSTRUCTIONS} Sergio Leone cinematography - that golden, dusty, epic spaghetti western look. Dramatic shadows, lens flare from the setting sun, visible dust particles.`,
+  },
+  {
+    id: "burningMan",
+    name: "Burning Man",
+    emoji: "🔥",
+    prompt: `${FACE_PRESERVATION}
+
+MANDATORY HEADPIECE: The most TRANSCENDENT playa headwear imaginable - could be a towering LED headdress that cycles through sacred geometry patterns, a crown made of found desert objects and fairy lights, elaborate goggles with kaleidoscope lenses pushed up on forehead, or a combination of feathers, chains, and things that definitely came from a vision quest. Dust-covered but make it fashion.
+
+Scene transformation: Peak desert radical self-expression - they're wearing something that's either high fashion or completely insane (or both). Think: iridescent bodysuit with strategic cutouts, faux fur coat despite it being 100 degrees, platform boots caked in playa dust, and body paint/glitter covering any visible skin. They're posed in front of art, mid-moment of pure transcendence - arms possibly raised, expression of absolute presence and joy.
+
+Background: The playa at golden hour/blue hour - massive art installations visible (a giant metal flower, impossible geometric sculptures, something definitely on fire in a controlled way). Art cars rolling by in the distance, one is a giant octopus shooting flames. The Man or Temple visible on the horizon. Other burners in various states of creative expression dot the landscape. Dust storm slightly visible in the distance but vibes are immaculate. Deep playa magic is palpable.
+
+${STYLE_INSTRUCTIONS} That specific golden-hour-on-the-playa magic - dusty atmosphere, warm sunset tones, the way the dust catches the light. This should feel like a moment of genuine magic and self-expression.`,
   },
   {
     id: "space",
-    name: "Space Adventure",
+    name: "Space Cadet",
     emoji: "🚀",
     prompt: `${FACE_PRESERVATION}
 
-MANDATORY HEADGEAR: Give them a retro-futuristic space helmet with a clear bubble visor (face fully visible), covered in mission stickers, with a tiny alien plushie suction-cupped to the outside, and an antenna on top with a blinking light. The helmet should look well-traveled, with space dust and small asteroid dents.
+MANDATORY HEADGEAR: A retro-futuristic space helmet situation - think 1960s sci-fi meets actual NASA meets rave. Clear bubble helmet (face fully visible) covered in mission stickers from places that don't exist ("First Mars Rave 2087", "Jupiter's Best Tacos"), a little alien plushie suction-cupped to the outside waving, LED strips around the rim, and maybe some holographic stars floating inside.
 
-Scene transformation: Dress them in a flashy NASA-meets-disco spacesuit - silver and orange with too many unnecessary pockets, patches from "Mars Taco Bell" and "Jupiter's Best Coffee," and a cape (because why not). They should be floating in zero-g with snacks and tools orbiting around them. A space cat in its own tiny suit floats nearby looking unimpressed.
+Scene transformation: Space but make it fashion - a metallic spacesuit that's giving more "intergalactic disco" than "actual astronaut." Silver and hot pink with unnecessary buckles, patches from imaginary space programs, and a cape (capes in zero-g are impractical but WHO CARES). They're floating with snacks and random objects orbiting around them - a pizza slice, some beer cans, a rubber duck. A space cat in a tiny helmet floats nearby looking completely unbothered.
 
-Background: A stunning view from a space station window - Earth below looking gorgeous, the Milky Way stretching across the void, a flying saucer photobombing in the distance, and the Moon with a "Humans Were Here" flag. Saturn's rings visible on the horizon. The control panel behind them has a "Days Since Accident: 3" sign.
+Background: The most stunning view from orbit - Earth below looking gorgeous, the Milky Way being extra, a UFO photobombing in the corner that might be friendly, Saturn visible just chilling. The space station interior behind them has a "Days Without Incident: 0" sign. There's definitely a disco ball floating somewhere. Someone has duct-taped a plant to the wall and it's thriving.
 
-${STYLE_INSTRUCTIONS} Cinematic space photography lighting - blue Earth-glow as key light, warm golden interior lights. Should look like a behind-the-scenes photo from a blockbuster sci-fi movie.`,
+${STYLE_INSTRUCTIONS} Cinematic as hell - that blue Earth-glow lighting, lens flares, the works. This should look like a still from the best sci-fi comedy never made.`,
   },
   {
     id: "underwater",
@@ -87,27 +113,13 @@ ${STYLE_INSTRUCTIONS} Cinematic space photography lighting - blue Earth-glow as 
     emoji: "🧜",
     prompt: `${FACE_PRESERVATION}
 
-MANDATORY HEADPIECE: Add an absolutely MAGNIFICENT underwater crown/headpiece - a tiara made of living coral, bioluminescent jellyfish tentacles cascading down like hair decorations, pearl strings woven throughout, and a tiny seahorse perched on top looking regal. Their natural hair should float ethereally around the crown as if underwater.
+MANDATORY HEADPIECE: The most EXTRA underwater royalty look - a crown made of living bioluminescent coral, jellyfish tentacles cascading down like the most avant-garde hair extensions, pearls and shells woven throughout, a tiny seahorse perched on top acting as their royal advisor. Their natural hair floats ethereally, possibly with some strands that have turned into kelp (in a cool way).
 
-Scene transformation: Give them a spectacular iridescent mermaid/merman tail in impossible colors that shift from teal to purple to gold. Add a seashell top/chest piece covered in barnacles and pearls, armfuls of sea glass bracelets, and they should be holding a trident that's also a giant fork (for eating sea spaghetti, obviously). A grumpy pufferfish floats next to them as their sidekick.
+Scene transformation: Full mermaid/merman FANTASY - an iridescent tail in impossible colors that shift from deep purple to electric teal to gold, scales that catch light like a disco ball underwater. Chest covered in artistic shell/pearl arrangement. Arms dripping with sea glass jewelry. They're holding a trident that's definitely also a cocktail accessory. Their expression is "I'm the hot one in this ocean and I know it." A dramatically grumpy pufferfish serves as their reluctant sidekick.
 
-Background: An insane underwater kingdom - coral castles with sea anemone gardens, schools of tropical fish forming the shape of a heart, a treasure chest overflowing with gold coins and rubber ducks, an octopus DJ spinning records made of sand dollars, and sunbeams filtering through creating god-rays. A shark in the background wears reading glasses and looks scholarly.
+Background: An absolutely UNREAL underwater kingdom - coral castles with rooms you can see into, schools of tropical fish forming a heart shape (they're fans), a treasure chest overflowing with gold AND modern items (is that an iPhone?), an octopus DJ spinning sand dollar records, a shark in the background wearing a tiny bow tie looking fancy. Sunbeams create god-rays. Everything glows slightly. There might be an underwater rave happening in the distance.
 
-${STYLE_INSTRUCTIONS} Ethereal underwater lighting with beautiful caustics. Rich, saturated coral colors with that slight blue-green underwater tint. Should look like a high-budget underwater photograph from a fantasy film.`,
-  },
-  {
-    id: "giantFood",
-    name: "Giant Food Attack",
-    emoji: "🍔",
-    prompt: `${FACE_PRESERVATION}
-
-MANDATORY HAT: Add a towering chef's toque (chef hat) that's at least 2 feet tall, slightly tilted, with food splatters on it that tell a story of culinary chaos. OR give them a hat that IS food - like their head is poking through a giant donut, or they're wearing a hamburger bun as a hat with sesame seeds.
-
-Scene transformation: They should be in a chef's outfit that's seen better days - white coat covered in colorful sauce splatters, wooden spoon tucked in pocket. Around them, ENORMOUS food is falling from the sky - pizza slices the size of surfboards, hamburgers as big as tires, french fries like baseball bats, and donuts you could hula-hoop with. They should look either delighted or hilariously overwhelmed.
-
-Background: A chaotic commercial kitchen where everything has gone wonderfully wrong - pots boiling over with rainbows, a refrigerator door open revealing it's a portal to a cheese dimension, vegetables with cartoon faces cheering from a cutting board, and a wall clock made of a fried egg. Through the window, more giant food rains down on the city.
-
-${STYLE_INSTRUCTIONS} Bright, appetizing food photography lighting. The giant food should look absolutely delicious and photorealistic despite being enormous. Magazine-quality food styling.`,
+${STYLE_INSTRUCTIONS} Ethereal underwater photography magic - beautiful caustics, rich saturated coral colors, that slight blue-green tint. Fantasy but BELIEVABLE fantasy.`,
   },
   {
     id: "eighties",
@@ -115,13 +127,13 @@ ${STYLE_INSTRUCTIONS} Bright, appetizing food photography lighting. The giant fo
     emoji: "💪",
     prompt: `${FACE_PRESERVATION}
 
-MANDATORY HAIR: Give them the ULTIMATE 80s exercise hair - massively crimped and volumized, held back by a neon sweatband (hot pink or electric blue), with a scrunchie that's definitely too big. The hair should be so big it has its own gravitational pull. Add some sweat glistening on their forehead for authenticity.
+MANDATORY HAIR: The ULTIMATE 80s fitness hair - we're talking crimped to the heavens, teased to Jesus, held back by a sweatband that means BUSINESS. The hair should be so voluminous it needs its own zip code, possibly with a scrunchie that's aggressively neon, and DEFINITELY some sweat glistening because this workout is INTENSE. Bonus: a headband that says something like "NO PAIN NO GAIN" or just aggressive geometric shapes.
 
-Scene transformation: Dress them in the most outrageously bright aerobics outfit imaginable - a shiny spandex leotard in clashing neon colors (think pink and green zebra print), matching leg warmers scrunched perfectly, high-top Reeboks, and wristbands on BOTH wrists. They should be mid-aerobic move - maybe a high kick or a fist pump. Add visible VHS tracking lines occasionally across the image.
+Scene transformation: Peak Jane Fonda energy - a spandex leotard in the most aggressively clashing neon colors possible (think hot pink and lime green leopard print), matching leg warmers bunched perfectly, high-top Reeboks that have never seen dirt, and wristbands on both wrists because symmetry. They're frozen mid-aerobic move - maybe a high kick that defies physics, or the classic fist-pump. Their expression says "I WILL OUT-CARDIO GOD."
 
-Background: A wood-paneled home gym/living room straight from 1985 - a tube TV showing a workout video, a boombox the size of a suitcase, motivational posters with sunsets and eagles, shag carpet, and houseplants that are definitely fake. Mirror wall reflecting everything. Other aerobics participants in the background also in ridiculous outfits.
+Background: The most 80s home gym/living room combo ever - wood paneling, a tube TV showing a workout VHS (tracking lines visible), a boombox the size of a small child, motivational posters with eagles and sunsets, definitely some shag carpet, fake houseplants, and a mirror wall reflecting the chaos. Other aerobics participants in the background are equally committed to the bit.
 
-${STYLE_INSTRUCTIONS} That warm, slightly soft 1980s video quality - a bit grainy, oversaturated neons, with the characteristic look of a VHS recording. Should look like a freeze-frame from an actual Jane Fonda workout tape.`,
+${STYLE_INSTRUCTIONS} VHS aesthetic - slightly soft, oversaturated neons, maybe some subtle tracking lines. This should look like a freeze-frame from an actual workout tape that was in everyone's mom's collection.`,
   },
   {
     id: "renaissance",
@@ -129,26 +141,33 @@ ${STYLE_INSTRUCTIONS} That warm, slightly soft 1980s video quality - a bit grain
     emoji: "🏰",
     prompt: `${FACE_PRESERVATION}
 
-MANDATORY HEADWEAR: Give them either a magnificent JESTER HAT with three long floppy points ending in bells that actually jingle, in clashing royal purple and gold with diamond patterns - OR an absurdly elaborate royal crown that's clearly too heavy, encrusted with gems the size of golf balls and topped with a tiny flag of their own face.
+MANDATORY HEADWEAR: Either a MAGNIFICENT jester hat with three impossibly long floppy points, each ending in a bell that definitely jingles, in clashing purple and gold with diamond patterns and maybe a hidden flask - OR an absolutely ABSURD royal crown that's clearly too heavy, encrusted with gems the size of golf balls, tilted because it's literally too much crown, with a tiny flag on top featuring their own face as the royal crest.
 
-Scene transformation: Dress them in full Renaissance faire glory - we're talking puffy sleeves you could hide a turkey in, a velvet doublet or corseted gown in rich jewel tones, a ruffled collar so big it's basically a neck cloud, and tights (definitely tights). They should be holding a comically large turkey leg in one hand and a goblet overflowing with grape juice in the other.
+Scene transformation: Full Renaissance faire COMMITMENT - we're talking puffy sleeves you could hide multiple turkey legs in, a velvet doublet or dramatically corseted gown in jewel tones, a ruffled collar so large it's basically a neck satellite dish, and DEFINITELY tights (the tights are non-negotiable). They're holding a comically oversized turkey leg in one hand like a scepter and a goblet that's overflowing with... let's say grape juice... in the other. Their expression says "I am the main character of this entire century."
 
-Background: A bustling Renaissance faire castle courtyard - a jousting match happening in the background where one knight has fallen off hilariously, a dragon made of papier-mâché breathing party streamers, merchants selling "Ye Olde Funnel Cakes," a stocks/pillory where someone is stuck taking selfies, and banners with punny medieval phrases. A court fool juggles in the corner.
+Background: The most CHAOTIC Renaissance faire moment ever - a jousting match where one knight has hilariously yeeted off their horse, a dragon made of papier-mâché that's actually breathing party streamers, merchants selling "YE OLDE FUNNEL CAKES" and "MEAD (it's just Monster Energy)", someone enthusiastically stuck in the stocks but they're taking selfies about it, a court jester dabbing in the corner, and banners with anachronistic phrases.
 
-${STYLE_INSTRUCTIONS} Rich, painterly lighting reminiscent of Renaissance oil paintings but as a photograph. Deep shadows, warm golden hour glow, theatrical drama. Should look like a still from a comedy period film.`,
+${STYLE_INSTRUCTIONS} Rich, painterly lighting like a Renaissance oil painting but photographed - deep shadows, golden hour glow, theatrical drama. Comedy and grandeur.`,
   },
   {
-    id: "tropical",
-    name: "Tourist Chaos",
-    emoji: "🌴",
+    id: "extremeVacation",
+    name: "Extreme Vacation",
+    emoji: "🤪",
     prompt: `${FACE_PRESERVATION}
 
-MANDATORY HAT: Add the most AGGRESSIVELY touristy sun hat imaginable - an enormous floppy straw hat covered in tacky destination pins, a tiny battery-powered fan clipped to the brim, plastic fruit decorations, and "I ❤️ VACATION" embroidered on it. Bonus points for zinc sunscreen on their nose.
+MANDATORY HEADGEAR: The most CHAOTIC vacation headwear - either a helmet covered in GoPros pointing in every direction, a backwards cap with "SEND IT" embroidered, a completely inappropriate hat for the activity they're doing (like a top hat while skydiving), OR their hair is just WRECKED from whatever extreme thing just happened - windswept, possibly on fire slightly, definitely tells a story.
 
-Scene transformation: Dress them as the ultimate tourist disaster - a Hawaiian shirt SO loud it should be illegal (think flamingos, pineapples, AND palm trees clashing), cargo shorts with every pocket bulging, socks with sandals (mandatory), binoculars AND a camera around neck, and they're absolutely DROWNING in leis - at least 15 of them stacked up. They're holding a comically large tropical drink with 7 umbrellas.
+Scene transformation: They're mid-RIDICULOUS vacation activity - maybe they're somehow surfing, skydiving, AND riding a jet ski simultaneously. Wearing a combination of vacation clothes that makes no sense - Hawaiian shirt tucked into a wetsuit, ski goggles with flip-flops, life jacket over a tuxedo. Their expression is somewhere between "this was a terrible idea" and "I've never felt more alive." They're clutching an umbrella drink that has somehow survived the chaos.
 
-Background: An overwhelmingly kitschy tropical tourist trap - a beach with suspiciously turquoise water, a tiki bar where the bartender is a carved coconut with sunglasses, souvenir shops selling "My Parents Went to Paradise and All I Got Was This Photo," inflatable flamingos and palm trees everywhere, and a photo-op cutout of a surfer. A seagull is actively stealing someone's fries in the background.
+Background: An impossible vacation mashup - they're at the beach but also a ski mountain but also a jungle? A volcano is erupting but not in a dangerous way, more festive. A shark is visible but it's wearing a party hat. There's a cruise ship in the distance where something is definitely on fire. A banner being pulled by a plane says "YOLO" or "NO REFUNDS." Other tourists in the background are experiencing various levels of vacation chaos.
 
-${STYLE_INSTRUCTIONS} Bright, oversaturated vacation photo vibes - that classic point-and-shoot tourist snapshot look. Harsh midday sun, everyone squinting slightly, maximum tropical color saturation.`,
+${STYLE_INSTRUCTIONS} That action-shot vacation photo energy - slightly motion-blurred background, perfect timing, the "we got THE shot" moment. Bright, saturated travel photography vibes.`,
+  },
+  {
+    id: "custom",
+    name: "Custom Scene",
+    emoji: "✨",
+    prompt: "", // Will be filled in by user
+    isCustom: true,
   },
 ];
