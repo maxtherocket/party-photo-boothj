@@ -1,4 +1,4 @@
-# Taco Fiesta AI Photo Booth - Technical Reference
+# AI Photo Booth - Technical Reference
 
 > A comprehensive technical reference for the AI-powered photo booth application. Use this document as context when working with LLMs on this codebase.
 
@@ -141,7 +141,7 @@ export default defineSchema({
   photos: defineTable({
     originalStorageId: v.id("_storage"),      // Reference to uploaded selfie
     resultStorageId: v.optional(v.id("_storage")), // Reference to AI result
-    scene: v.string(),                         // Scene ID (e.g., "tacoFiesta")
+    scene: v.string(),                         // Scene ID (e.g., "neonCarnival")
     status: v.union(
       v.literal("processing"),
       v.literal("complete"),
@@ -242,17 +242,17 @@ export interface Scene {
 
 export const SCENES: Scene[] = [
   {
-    id: "tacoFiesta",
-    name: "Taco Fiesta",
-    emoji: "🌮",
-    prompt: "Transform this photo into a vibrant Mexican fiesta scene...",
+    id: "neonCarnival",
+    name: "Neon Carnival",
+    emoji: "🎡",
+    prompt: "Transform this photo into a vibrant neon carnival scene...",
   },
   // ... more scenes
 ];
 ```
 
 **Available Scenes:**
-1. **Taco Fiesta** 🌮 - Mexican fiesta with sombreros and papel picado
+1. **Neon Carnival** 🎡 - Neon-lit festival with dramatic lighting
 2. **Y2K Throwback** 📱 - Early 2000s aesthetic with flip phones
 3. **Disco Fever** 🪩 - 1970s disco with mirror balls
 4. **Wild West** 🤠 - Western frontier theme

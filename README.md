@@ -1,11 +1,11 @@
-# 🌮 Taco Fiesta AI Photo Booth
+# ✨ AI Photo Booth
 
 An AI-powered photo booth web app that transforms selfies into fun, themed scenes using Google's Gemini API.
 
 ## Features
 
 - 📸 Take selfies using your device's camera
-- 🎨 Choose from fun scene transformations (Taco Fiesta, Y2K Throwback, Disco, Wild West, Space, Underwater)
+- 🎨 Choose from curated scene transformations with a custom prompt option
 - ✨ AI-powered image transformation using Gemini 2.0 Flash
 - 📱 QR code sharing for easy access
 - 💾 Download transformed photos directly

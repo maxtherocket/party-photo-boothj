@@ -10,10 +10,10 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "🌮 Taco Fiesta Photo Booth",
-  description: "AI-powered photo booth for the ultimate fiesta experience!",
+  title: "AI Photo Booth",
+  description: "Transform yourself with AI-powered scenes!",
   icons: {
-    icon: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌮</text></svg>",
+    icon: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✨</text></svg>",
   },
 };
 

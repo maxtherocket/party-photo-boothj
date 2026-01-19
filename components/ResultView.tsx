@@ -24,7 +24,7 @@ export function ResultView({ resultUrl, photoId, onRetake }: ResultViewProps) {
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `fiesta-photo-${photoId}.png`;
+      a.download = `ai-photo-${photoId}.png`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -38,8 +38,8 @@ export function ResultView({ resultUrl, photoId, onRetake }: ResultViewProps) {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: "My Fiesta Photo!",
-          text: "Check out my awesome AI-transformed photo!",
+          title: "My AI Photo Booth Result",
+          text: "Check out my AI-transformed photo!",
           url: shareUrl,
         });
       } catch (err) {
@@ -52,13 +52,16 @@ export function ResultView({ resultUrl, photoId, onRetake }: ResultViewProps) {
   };
 
   return (
-    <div className="flex flex-col items-center h-full p-4 overflow-y-auto">
-      <h2 className="text-2xl font-bold text-white mb-4 text-center">
-        🎉 Your Photo is Ready! 🎉
-      </h2>
+    <div className="flex flex-col gap-6 h-full overflow-y-auto">
+      <div className="text-center">
+        <h2 className="text-2xl font-bold text-white">Your photo is ready</h2>
+        <p className="text-sm text-white/60 mt-1">
+          Download, share, or create another version.
+        </p>
+      </div>
 
       {/* Result image */}
-      <div className="relative w-full max-w-sm aspect-[9/16] rounded-3xl overflow-hidden border-4 border-yellow-400 shadow-2xl mb-6">
+      <div className="relative w-full max-w-md mx-auto aspect-[9/16] rounded-3xl overflow-hidden border border-white/20 shadow-2xl">
         <img
           src={resultUrl}
           alt="Your transformed photo"
@@ -67,49 +70,45 @@ export function ResultView({ resultUrl, photoId, onRetake }: ResultViewProps) {
       </div>
 
       {/* Action buttons */}
-      <div className="flex flex-col gap-3 w-full max-w-sm">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full max-w-md mx-auto">
         <button
           onClick={handleDownload}
-          className="w-full py-4 px-6 bg-gradient-to-r from-green-500 to-emerald-600 
-                     rounded-2xl text-white font-bold text-lg shadow-lg
-                     hover:from-green-600 hover:to-emerald-700 active:scale-95 transition-all"
+          className="py-3 px-4 rounded-2xl bg-white text-slate-900 font-semibold shadow-lg hover:bg-indigo-50 transition-all"
         >
-          📥 Download Photo
+          Download
         </button>
 
         <button
           onClick={handleShare}
-          className="w-full py-4 px-6 bg-gradient-to-r from-blue-500 to-purple-600 
-                     rounded-2xl text-white font-bold text-lg shadow-lg
-                     hover:from-blue-600 hover:to-purple-700 active:scale-95 transition-all"
+          className="py-3 px-4 rounded-2xl bg-white/10 text-white font-semibold border border-white/15 hover:bg-white/15 transition-all"
         >
-          📤 Share Photo
+          Share
         </button>
 
         <button
           onClick={onRetake}
-          className="w-full py-4 px-6 bg-white/10 backdrop-blur-sm
-                     rounded-2xl text-white font-bold text-lg border-2 border-white/30
-                     hover:bg-white/20 active:scale-95 transition-all"
+          className="py-3 px-4 rounded-2xl bg-transparent text-white/80 font-semibold border border-white/10 hover:text-white hover:border-white/30 transition-all"
         >
-          📸 Take Another Photo
+          Take another
         </button>
       </div>
 
       {/* QR Code Modal */}
       {showQR && (
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-3xl p-6 max-w-sm w-full text-center">
-            <h3 className="text-xl font-bold text-gray-800 mb-4">
-              Scan to View & Download
+          <div className="bg-slate-950 rounded-3xl p-6 max-w-sm w-full text-center border border-white/10">
+            <h3 className="text-lg font-semibold text-white mb-4">
+              Scan to open
             </h3>
             <div className="bg-white p-4 rounded-2xl inline-block mb-4">
               <QRCodeSVG value={shareUrl} size={200} />
             </div>
-            <p className="text-gray-600 text-sm mb-4 break-all">{shareUrl}</p>
+            <p className="text-white/60 text-sm mb-4 break-all">
+              {shareUrl}
+            </p>
             <button
               onClick={() => setShowQR(false)}
-              className="w-full py-3 bg-gray-800 text-white rounded-xl font-bold"
+              className="w-full py-3 bg-white text-slate-900 rounded-xl font-semibold"
             >
               Close
             </button>

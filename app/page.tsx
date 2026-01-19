@@ -12,83 +12,104 @@ export default function HomePage() {
   }, []);
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-purple-900 via-pink-800 to-orange-700 overflow-hidden">
-      {/* Animated background decorations */}
+    <main className="min-h-screen bg-slate-950 overflow-hidden relative selection:bg-indigo-500/30">
+      {/* Background Gradients */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-20 -left-20 w-64 h-64 bg-yellow-400/30 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute -bottom-20 -right-20 w-96 h-96 bg-pink-500/30 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute top-1/4 right-1/4 w-32 h-32 bg-orange-400/20 rounded-full blur-2xl animate-bounce" />
-        <div className="absolute bottom-1/4 left-1/4 w-48 h-48 bg-yellow-500/20 rounded-full blur-2xl animate-pulse" />
-
-        {/* Floating emojis */}
-        <div className="absolute top-20 left-10 text-4xl animate-bounce" style={{ animationDelay: "0s" }}>🌮</div>
-        <div className="absolute top-40 right-10 text-4xl animate-bounce" style={{ animationDelay: "0.5s" }}>🎉</div>
-        <div className="absolute bottom-40 left-20 text-4xl animate-bounce" style={{ animationDelay: "1s" }}>🎊</div>
-        <div className="absolute bottom-20 right-20 text-4xl animate-bounce" style={{ animationDelay: "1.5s" }}>🌶️</div>
-        <div className="absolute top-1/2 left-5 text-3xl animate-bounce" style={{ animationDelay: "0.3s" }}>🥳</div>
-        <div className="absolute top-1/3 right-5 text-3xl animate-bounce" style={{ animationDelay: "0.8s" }}>✨</div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_0%,_rgba(99,102,241,0.18),transparent_55%)]" />
+        <div className="absolute -top-24 right-0 w-80 h-80 bg-indigo-500/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl" />
       </div>
 
-      <div className="relative z-10 min-h-screen flex flex-col items-center justify-center p-6">
-        {/* Title */}
-        <div className="text-center mb-8">
-          <h1 className="text-5xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-pink-300 to-orange-300 drop-shadow-lg mb-4">
-            🌮 Taco Fiesta
-          </h1>
-          <h2 className="text-3xl md:text-4xl font-bold text-white drop-shadow-lg">
+      <div className="relative z-10 max-w-6xl mx-auto px-6 py-12 lg:py-20">
+        <header className="flex items-center justify-between mb-10">
+          <div className="flex items-center gap-2 text-white font-semibold tracking-tight">
+            <span className="text-indigo-300">✨</span>
             AI Photo Booth
-          </h2>
-          <p className="text-white/80 mt-4 text-lg max-w-md">
-            Take a selfie, pick a fun scene, and watch AI transform you into something amazing!
-          </p>
-        </div>
+          </div>
+          <Link
+            href="/booth"
+            className="hidden sm:inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-white/80 hover:bg-white/10 transition"
+          >
+            Launch Booth
+          </Link>
+        </header>
 
-        {/* QR Code Card */}
-        <div className="bg-white/10 backdrop-blur-md rounded-3xl p-8 border-2 border-white/20 shadow-2xl mb-8">
-          <p className="text-white text-center mb-4 font-semibold">
-            📱 Scan to join on your phone!
-          </p>
-          <div className="bg-white p-4 rounded-2xl">
-            {boothUrl && <QRCodeSVG value={boothUrl} size={200} />}
+        <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
+          <div>
+            <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-xs font-medium text-indigo-200">
+              AI-Powered Transformations
+            </div>
+            <h1 className="mt-6 text-4xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight">
+              Turn selfies into cinematic scenes.
+            </h1>
+            <p className="mt-4 text-base sm:text-lg text-slate-300 max-w-xl">
+              Capture a photo, pick a vibe, and get a polished, share-ready
+              result in seconds. Built for both phones and big screens.
+            </p>
+
+            <div className="mt-8 flex flex-col sm:flex-row gap-3">
+              <Link
+                href="/booth"
+                className="inline-flex items-center justify-center rounded-full bg-white px-6 py-3 text-base font-semibold text-slate-900 hover:bg-indigo-50 transition"
+              >
+                Start Photo Booth
+              </Link>
+              <a
+                href="#how-it-works"
+                className="inline-flex items-center justify-center rounded-full border border-white/15 bg-white/5 px-6 py-3 text-base font-semibold text-white/80 hover:bg-white/10 transition"
+              >
+                See how it works
+              </a>
+            </div>
+
+            <div
+              id="how-it-works"
+              className="mt-10 grid gap-4 sm:grid-cols-3"
+            >
+              {[
+                { icon: "📸", title: "Capture", desc: "Snap a selfie in one tap." },
+                { icon: "🎨", title: "Select", desc: "Pick a curated scene style." },
+                { icon: "✨", title: "Share", desc: "Download or share instantly." },
+              ].map((step, i) => (
+                <div
+                  key={i}
+                  className="rounded-2xl border border-white/10 bg-white/5 p-4 text-center backdrop-blur-sm"
+                >
+                  <div className="text-2xl mb-2">{step.icon}</div>
+                  <h3 className="text-sm font-semibold text-white">
+                    {step.title}
+                  </h3>
+                  <p className="mt-1 text-xs text-slate-400">{step.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex flex-col items-center">
+            <div className="w-full max-w-sm rounded-3xl border border-white/10 bg-white/5 p-6 shadow-2xl backdrop-blur-xl">
+              <div className="flex items-center justify-between text-xs uppercase tracking-wider text-white/60">
+                <span>Scan to open</span>
+                <span>Mobile Ready</span>
+              </div>
+              <div className="mt-6 flex items-center justify-center rounded-2xl bg-white p-4">
+                {boothUrl && <QRCodeSVG value={boothUrl} size={180} />}
+              </div>
+              <p className="mt-5 text-center text-sm text-slate-300">
+                Open the booth on your phone to capture and share instantly.
+              </p>
+            </div>
+            <Link
+              href="/booth"
+              className="mt-6 sm:hidden inline-flex items-center justify-center rounded-full bg-white px-6 py-3 text-base font-semibold text-slate-900 hover:bg-indigo-50 transition"
+            >
+              Launch Booth
+            </Link>
           </div>
         </div>
 
-        {/* Direct link button */}
-        <Link
-          href="/booth"
-          className="group relative px-12 py-5 bg-gradient-to-r from-yellow-400 via-pink-500 to-orange-500 
-                   rounded-full text-white font-bold text-xl shadow-2xl
-                   hover:scale-105 active:scale-95 transition-all duration-200
-                   overflow-hidden"
-        >
-          <span className="relative z-10">Start Photo Booth →</span>
-          <div className="absolute inset-0 bg-gradient-to-r from-yellow-500 via-pink-600 to-orange-600 
-                        opacity-0 group-hover:opacity-100 transition-opacity" />
-        </Link>
-
-        {/* Instructions */}
-        <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-3xl">
-          <div className="text-center p-4">
-            <div className="text-4xl mb-2">📸</div>
-            <h3 className="text-white font-bold mb-1">1. Take a Selfie</h3>
-            <p className="text-white/60 text-sm">Strike a pose with friends!</p>
-          </div>
-          <div className="text-center p-4">
-            <div className="text-4xl mb-2">🎨</div>
-            <h3 className="text-white font-bold mb-1">2. Pick a Scene</h3>
-            <p className="text-white/60 text-sm">Choose from fun themes</p>
-          </div>
-          <div className="text-center p-4">
-            <div className="text-4xl mb-2">✨</div>
-            <h3 className="text-white font-bold mb-1">3. Get Transformed</h3>
-            <p className="text-white/60 text-sm">AI magic in seconds!</p>
-          </div>
-        </div>
-
-        {/* Footer */}
-        <p className="absolute bottom-4 text-white/40 text-sm">
-          Made with ❤️ for the Fiesta
-        </p>
+        <footer className="mt-14 text-center text-xs text-slate-500">
+          Powered by Gemini AI
+        </footer>
       </div>
     </main>
   );

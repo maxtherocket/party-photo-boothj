@@ -34,33 +34,37 @@ export function SceneSelector({ onSelect, capturedImage }: SceneSelectorProps) {
   };
 
   return (
-    <div className="flex flex-col h-full p-4">
-      {/* Preview of captured photo */}
-      <div className="flex justify-center mb-6">
-        <div className="relative w-32 h-32 rounded-2xl overflow-hidden border-4 border-white/30 shadow-xl">
-          <img
-            src={`data:image/jpeg;base64,${capturedImage}`}
-            alt="Your photo"
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
+    <div className="flex flex-col gap-6 h-full">
+      <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
+        {/* Preview of captured photo */}
+        <div className="flex justify-center lg:justify-start">
+          <div className="relative w-28 h-28 sm:w-32 sm:h-32 rounded-2xl overflow-hidden border border-white/20 shadow-xl">
+            <img
+              src={`data:image/jpeg;base64,${capturedImage}`}
+              alt="Your photo"
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+          </div>
+        </div>
+
+        <div className="flex-1">
+          <h2 className="text-2xl font-bold text-white mb-2">
+            Choose a scene
+          </h2>
+          <p className="text-white/70">
+            Pick a style or create a custom prompt for your transformation.
+          </p>
         </div>
       </div>
-
-      <h2 className="text-2xl font-bold text-center text-white mb-2">
-        Choose Your Scene!
-      </h2>
-      <p className="text-white/70 text-center mb-6">
-        Pick a wild transformation for your photo
-      </p>
 
       {/* Custom prompt modal */}
       {showCustomInput && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
-          <div className="bg-gradient-to-br from-purple-900 to-pink-900 rounded-3xl p-6 max-w-md w-full border-2 border-white/20 shadow-2xl">
+          <div className="bg-slate-950/95 rounded-3xl p-6 max-w-md w-full border border-white/10 shadow-2xl">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-bold text-white flex items-center gap-2">
-                <span className="text-2xl">✨</span> Create Your Scene
+              <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+                <span className="text-xl">✨</span> Create a custom scene
               </h3>
               <button
                 onClick={() => setShowCustomInput(false)}
@@ -69,74 +73,59 @@ export function SceneSelector({ onSelect, capturedImage }: SceneSelectorProps) {
                 ×
               </button>
             </div>
-            
+
             <p className="text-white/70 text-sm mb-4">
-              Describe the scene you want to be in. Be creative and specific! 
-              We&apos;ll add a fun hat and keep you looking like yourself.
+              Describe the scene you want. We&apos;ll keep your face and identity
+              intact and match the style to your vibe.
             </p>
 
             <textarea
               value={customPrompt}
               onChange={(e) => setCustomPrompt(e.target.value)}
-              placeholder="e.g., I'm a pirate captain on a ship during a storm, fighting a giant octopus..."
-              className="w-full h-32 p-4 rounded-xl bg-black/30 border-2 border-white/20 
-                         text-white placeholder:text-white/40 resize-none
-                         focus:outline-none focus:border-yellow-400 transition-colors"
+              placeholder="e.g., a cinematic rooftop at night with neon signs and rain..."
+              className="w-full h-32 p-4 rounded-xl bg-black/30 border border-white/10 text-white placeholder:text-white/40 resize-none focus:outline-none focus:border-indigo-400 transition-colors"
               autoFocus
             />
 
             <div className="flex gap-3 mt-4">
               <button
                 onClick={() => setShowCustomInput(false)}
-                className="flex-1 py-3 rounded-xl border-2 border-white/20 text-white font-bold
-                           hover:bg-white/10 transition-colors"
+                className="flex-1 py-3 rounded-xl border border-white/15 text-white font-semibold hover:bg-white/10 transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={handleCustomSubmit}
                 disabled={!customPrompt.trim()}
-                className="flex-1 py-3 rounded-xl bg-gradient-to-r from-yellow-400 to-orange-500 
-                           text-black font-bold disabled:opacity-50 disabled:cursor-not-allowed
-                           hover:from-yellow-300 hover:to-orange-400 transition-all"
+                className="flex-1 py-3 rounded-xl bg-white text-slate-900 font-semibold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-indigo-50 transition-all"
               >
-                Let&apos;s Go! 🚀
+                Generate Scene
               </button>
             </div>
-
-            <p className="text-white/50 text-xs text-center mt-4">
-              Pro tip: The wilder the description, the more fun the result!
-            </p>
           </div>
         </div>
       )}
 
       {/* Scene grid */}
       <div className="flex-1 overflow-y-auto">
-        <div className="grid grid-cols-2 gap-4 pb-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 pb-2">
           {SCENES.map((scene) => (
             <button
               key={scene.id}
               onClick={() => handleSceneClick(scene)}
-              className={`group relative backdrop-blur-sm rounded-2xl p-4 
-                         border-2 hover:border-yellow-400 
-                         hover:bg-white/20 transition-all duration-200
-                         active:scale-95 ${
-                           scene.isCustom
-                             ? "bg-gradient-to-br from-yellow-500/20 to-pink-500/20 border-yellow-400/50"
-                             : "bg-white/10 border-white/20"
-                         }`}
+              className={`group relative rounded-2xl p-4 border transition-all duration-200 active:scale-95 ${
+                scene.isCustom
+                  ? "bg-white/10 border-indigo-300/40 hover:bg-white/15"
+                  : "bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20"
+              }`}
             >
-              <div className="text-5xl mb-2">{scene.emoji}</div>
-              <h3 className="font-bold text-white text-lg">{scene.name}</h3>
+              <div className="text-4xl mb-2">{scene.emoji}</div>
+              <h3 className="font-semibold text-white text-sm sm:text-base">
+                {scene.name}
+              </h3>
               {scene.isCustom && (
-                <p className="text-white/60 text-xs mt-1">Type your own!</p>
+                <p className="text-white/60 text-xs mt-1">Custom prompt</p>
               )}
-              <div
-                className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 
-                            bg-gradient-to-br from-yellow-400/20 to-pink-500/20 
-                            transition-opacity pointer-events-none"
-              />
             </button>
           ))}
         </div>
