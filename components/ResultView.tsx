@@ -7,9 +7,10 @@ interface ResultViewProps {
   resultUrl: string;
   photoId: string;
   onRetake: () => void;
+  onTryAnotherScene: () => void;
 }
 
-export function ResultView({ resultUrl, photoId, onRetake }: ResultViewProps) {
+export function ResultView({ resultUrl, photoId, onRetake, onTryAnotherScene }: ResultViewProps) {
   const [showQR, setShowQR] = useState(false);
 
   const shareUrl =
@@ -56,7 +57,7 @@ export function ResultView({ resultUrl, photoId, onRetake }: ResultViewProps) {
       <div className="text-center">
         <h2 className="text-2xl font-bold text-white">Your photo is ready</h2>
         <p className="text-sm text-white/60 mt-1">
-          Download, share, or create another version.
+          Download, share, or try a different scene with the same photo.
         </p>
       </div>
 
@@ -70,7 +71,7 @@ export function ResultView({ resultUrl, photoId, onRetake }: ResultViewProps) {
       </div>
 
       {/* Action buttons */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full max-w-md mx-auto">
+      <div className="grid grid-cols-2 gap-3 w-full max-w-md mx-auto">
         <button
           onClick={handleDownload}
           className="py-3 px-4 rounded-2xl bg-white text-slate-900 font-semibold shadow-lg hover:bg-indigo-50 transition-all"
@@ -86,10 +87,17 @@ export function ResultView({ resultUrl, photoId, onRetake }: ResultViewProps) {
         </button>
 
         <button
+          onClick={onTryAnotherScene}
+          className="py-3 px-4 rounded-2xl bg-indigo-500/80 text-white font-semibold hover:bg-indigo-500 transition-all"
+        >
+          Try Another Scene
+        </button>
+
+        <button
           onClick={onRetake}
           className="py-3 px-4 rounded-2xl bg-transparent text-white/80 font-semibold border border-white/10 hover:text-white hover:border-white/30 transition-all"
         >
-          Take another
+          Take New Photo
         </button>
       </div>
 

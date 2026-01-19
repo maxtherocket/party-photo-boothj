@@ -95,6 +95,13 @@ export default function BoothPage() {
     setPhotoId(null);
   }, []);
 
+  const handleTryAnotherScene = useCallback(() => {
+    setStep("scene");
+    // Keep capturedImage intact!
+    setSelectedScene(null);
+    setPhotoId(null);
+  }, []);
+
   return (
     <main className="min-h-screen bg-slate-950 overflow-hidden relative">
       {/* Background Gradients */}
@@ -138,6 +145,7 @@ export default function BoothPage() {
               resultUrl={photo.resultUrl}
               photoId={photoId}
               onRetake={handleRetake}
+              onTryAnotherScene={handleTryAnotherScene}
             />
           )}
 
